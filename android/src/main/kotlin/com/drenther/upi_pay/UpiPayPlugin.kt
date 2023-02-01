@@ -4,6 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+
+
+
+
+
+
+
+
+@@ -8,21 +9,29 @@ import android.graphics.drawable.Drawable
+
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -16,6 +26,8 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.PluginRegistry
 import java.io.ByteArrayOutputStream
 
 class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -34,15 +46,27 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
   override fun onMethodCall(call: MethodCall, result: Result) {
     hasResponded = false
 
-    this.result = result
 
+
+
+
+
+
+
+
+
+
+
+
+class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+
+    this.result = result
     when (call.method) {
       "initiateTransaction" -> this.initiateTransaction(call)
       "getInstalledUpiApps" -> this.getInstalledUpiApps()
       else -> result.notImplemented()
     }
   }
-
   private fun initiateTransaction(call: MethodCall) {
     val app: String? = call.argument("app")
     val pa: String? = call.argument("pa")
@@ -53,7 +77,6 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
     val am: String? = call.argument("am")
     val cu: String? = call.argument("cu")
     val url: String? = call.argument("url")
-
     try {
       /*
        * Some UPI apps extract incorrect format VPA due to url encoding of `pa` parameter.
@@ -78,7 +101,6 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
       uriStr += "&mode=00" // &orgid=000000"
       val uri = Uri.parse(uriStr)
       // Log.d("upi_pay", "initiateTransaction URI: " + uri.toString())
-
       val intent = Intent(Intent.ACTION_VIEW, uri)
       intent.setPackage(app)
 
@@ -88,16 +110,25 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
       }
 
       activity?.startActivityForResult(intent, requestCodeNumber)
+
     } catch (ex: Exception) {
       Log.e("upi_pay", ex.toString())
       this.success("failed_to_open_app")
+
+
+
+
+
+
+
+
+class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+
     }
   }
-
   private fun getInstalledUpiApps() {
     val uriBuilder = Uri.Builder()
     uriBuilder.scheme("upi").authority("pay")
-
     val uri = uriBuilder.build()
     val intent = Intent(Intent.ACTION_VIEW, uri)
 
@@ -105,17 +136,14 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
     try {
       val activities = packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+
       // Convert the activities into a response that can be transferred over the channel.
       val activityResponse = activities?.map {
         val packageName = it.activityInfo.packageName
         val drawable = packageManager.getApplicationIcon(packageName)
 
         val bitmap = getBitmapFromDrawable(drawable)
-        val icon = if (bitmap != null) {
-          encodeToBase64(bitmap)
-        } else {
-          null
-        }
+        val icon = encodeToBase64(bitmap)
 
         mapOf(
                 "packageName" to packageName,
@@ -126,19 +154,28 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
       }
 
       result?.success(activityResponse)
+
+
+
+
+
+
+
+
+     class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+
     } catch (ex: Exception) {
       Log.e("upi_pay", ex.toString())
       result?.error("getInstalledUpiApps", "exception", ex)
     }
   }
-
   private fun encodeToBase64(image: Bitmap): String? {
     val byteArrayOS = ByteArrayOutputStream()
     image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOS)
     return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.NO_WRAP)
   }
 
-  private fun getBitmapFromDrawable(drawable: Drawable): Bitmap? {
+  private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
     val bmp: Bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bmp)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
@@ -146,16 +183,36 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
     return bmp
   }
 
-  private fun success(o: String) {
+
+
+
+
+
+
+
+   class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+
+                                                              private fun success(o: String) {
     if (!hasResponded) {
       hasResponded = true
       result?.success(o)
     }
   }
 
+
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
     if (requestCodeNumber == requestCode && result != null) {
       if (data != null) {
+
+
+
+
+
+
+
+
+         class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+
         try {
           val response = data.getStringExtra("response")!!
           this.success(response)
@@ -168,6 +225,7 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
     }
     return true
   }
+
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "upi_pay")
@@ -194,4 +252,5 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
   override fun onDetachedFromActivity() {
     activity = null
   }
+
 }
