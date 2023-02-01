@@ -6,13 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 
 
-
-
-
-
-
-
-@@ -8,21 +9,29 @@ import android.graphics.drawable.Drawable
+import android.graphics.drawable.Drawable
 
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -58,7 +52,7 @@ class UpiPayPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
 
 
-class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+   class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
     this.result = result
     when (call.method) {
@@ -122,7 +116,7 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
 
 
-class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+     class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
     }
   }
@@ -190,7 +184,7 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
 
 
-   class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+  class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
                                                               private fun success(o: String) {
     if (!hasResponded) {
@@ -211,7 +205,7 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
 
 
-         class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
+        class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
 
         try {
           val response = data.getStringExtra("response")!!
